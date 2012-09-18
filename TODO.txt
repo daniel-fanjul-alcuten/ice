@@ -1,0 +1,66 @@
+DEFINITIONS
+
+chunk = a blob or a piece of a file, max 2**16-1 bytes
+berg = a file that contains chunks and their SHA256; chunks are not counted and do not need to be sorted
+floe = a file that keeps a sorted list of the SHA256 in a berg and their offset and length
+neve = a file that keeps a sorted list of the SHA256 and their locations in a set of bergs and floes
+
+FORMATS
+
+berg format: magic, (chunk_sha, chunk_length, chunk_data)+, file_sha
+floe format: magic, chunk_count, chunk_sha+, (chunk_offset, chunk_length)+, file_sha
+neve format: magic, file_sha_count, file_sha+, chunk_count, (chunk_sha, accumulated_offset_count)+, (chunk_length, (file_sha_index, data_file_offset)+)+, file_sha
+
+the names of the files are the sha of the file with the extensions "berg", "floe" and "neve" respectively
+the neve references the files using their sha, but the files may introduce slashes every two hexadecimal characters to avoid large directories
+
+COMMANDS
+
+the commands generate the files in the current working directory or in the given directory ([-d <dir>])
+
+PLUMBING (WRITE)
+
+the names of the generated files are writen to the standard output
+
+ice berg [--floe] [<input_file>]
+	it reads a file or the standard input and it generates a berg (and optionally the floe)
+
+ice floe [<berg_file>]
+	it reads a berg from a file or the standard input and it generates its floe
+
+ice neve <berg_file | floe_file | neve_file>+
+	it reads a set of bergs, floes and/or neves and it generates a new neve that indexes all the chunks
+
+ice lump [--floe] <sha>+ <berg_file | floe_file | neve_file>+
+	it generates a berg (and optionally the floe) with only the given chunks, the chunks must be in the given bergs, floes and neves
+
+PLUMBING (READ)
+
+ice fsck <berg_file | floe_file | neve_file>+
+	it checks the contents of the given bergs, floes and neves
+	it needs options to check only the given files or the referenced files also
+
+ice size <berg_file | floe_file | neve_file>+
+	it returns the total number of hashes in the given bergs, floes and neves
+	if several files are given the number of hashes may include repeated ones
+
+ice list <berg_file | floe_file | neve_file>+
+	it returns an unsorted tab separated list of sha strings and lengths of the chunks in the given bergs and floes
+	it returns an unsorted tab separated list of sha strings, lengths, and location (sha of the file and offset) of the chunks in the given neves
+
+PORCELAINS
+
+ice freeze [--floe] [--neve] [--berg-size <size>] <input_file> <berg_file | floe_file | neve_file>+
+	it reads a file or the standard input and it generates one or more bergs (and optionally the floes) of the given max size
+	the shas of the chunks are writen to the standard output and the chunks already contained in the given bergs, floes and neves are not rewriten
+	it writes the names of the bergs in the standard output
+	optionally it writes a new neve that indexes the new bergs and writes its name in the standard output
+
+ice melt <sha>+ <berg_file | floe_file | neve_file>+
+	it concatenates in the standard output the chunks of the given shas in the given bergs, floes and neves
+
+FUTURE WORK
+
+	to be able to apply freeze and melt to several at once, replacing files with placeholders
+	placeholders should not contain more than N shas, so nesting of shas should be implemented
+	commands for sha nesting should be provided
