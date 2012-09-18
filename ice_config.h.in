@@ -1,0 +1,3 @@
+// the configured options and settings for Fastqueue
+#define ice_VERSION_MAJOR @ice_VERSION_MAJOR@
+#define ice_VERSION_MINOR @ice_VERSION_MINOR@
