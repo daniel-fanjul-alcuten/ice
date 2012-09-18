@@ -63,16 +63,16 @@ if(DOXYGEN_FOUND)
 endif(DOXYGEN_FOUND)
 
 # add executable
-add_executable(ice ice.cc ${SourceFiles})
+add_executable(ice src/ice.cc ${SourceFiles})
 
 # link libs
 include_directories(${Boost_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS}
   ${GMOCK_INCLUDE_DIRS})
 
-target_link_libraries(Fice libgflags.a dl ${CMAKE_THREAD_LIBS_INIT}
+target_link_libraries(ice pthread libgflags.a dl ${CMAKE_THREAD_LIBS_INIT}
   ${Boost_LIBRARIES})
 
-target_link_libraries(runTests libgflags.a dl ${CMAKE_THREAD_LIBS_INIT}
+target_link_libraries(runTests pthread libgflags.a dl ${CMAKE_THREAD_LIBS_INIT}
   ${Boost_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES})
 
 # ctags exuberant
