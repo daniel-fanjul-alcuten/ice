@@ -9,3 +9,4 @@ ice_config.h
 doc/
 tags
 build/
+*.swp
