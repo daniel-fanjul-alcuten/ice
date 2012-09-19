@@ -40,7 +40,9 @@ find_package(GMock REQUIRED)
 # Add test file
 file(GLOB TestFiles **/*_test.cc)
 
-set(iceSources src/digest.cc src/chunk.cc src/berg_reader.cc src/berg_writer.cc
+set(iceSources src/digest.cc src/chunk.cc
+  src/berg_reader.cc src/berg_writer.cc
+  src/floe.cc
   src/cli/berg.cc)
 
 file(GLOB TagSources **/*cc **/*h)
