@@ -13,30 +13,44 @@
 ///
 /// You should have received a copy of the GNU General Public License
 /// along with ice.  If not, see <http://www.gnu.org/licenses/>.
+#include "src/chunk.h"
 
-#include "src/ice.h"
+Chunk::Chunk() {
+}
 
-int main(int argc, char **argv) {
-  // Initialize Google's logging library.
-  google::InitGoogleLogging(argv[0]);
+Chunk::Chunk(ChunkData data) : data_(data) {
+}
 
-  // start the app
-  if (strcmp("berg", argv[1]) == 0) {
-    if (argc > 1) {
-      Berg::Write(argv[2]);
-    } else {
-      Berg::WriteFile(std::cin);
-    }
-  } else if (strcmp("size", argv[1]) == 0) {
-    Digest d;
-    BergReader r(argv[2], d);
-    cout << r.ChunkCount() << endl;
-  } else if (strcmp("list", argv[1]) == 0) {
-    Digest d;
-    BergReader r(argv[2], d);
-    ShaMap hashes = r.ListHashes();
-    for (ShaMapper it = hashes->begin(); it != hashes->end(); ++it) {
-      cout << Digest::ToString(it->first) << "\t" << it->second << endl;;
-    }
+Chunk::Chunk(ChunkData data, Sha hash) : data_(data), hash_(hash) {
+}
+
+void Chunk::Create(ChunkData data) {
+  data_ = data;
+}
+
+void Chunk::Create(ChunkData data, Sha hash) {
+  data_ = data;
+  hash_ = hash;
+}
+
+void Chunk::CalculateHash() {
+  Digest d;
+  d.Update(data_);
+  hash_ = d.Final();
+}
+
+Sha Chunk::hash() {
+  if (! hash_) {
+    CalculateHash();
   }
+
+  return hash_;
+}
+
+size_t Chunk::length() {
+  return data_.length;
+}
+
+ChunkData Chunk::data() {
+  return data_;
 }

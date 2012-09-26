@@ -13,30 +13,17 @@
 ///
 /// You should have received a copy of the GNU General Public License
 /// along with ice.  If not, see <http://www.gnu.org/licenses/>.
+#define BERG_MAGIC_HEADER 0x1
 
-#include "src/ice.h"
+static void GenRandom(char *s, const int len) {
+  static const char alphanum[] =
+    "0123456789"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
 
-int main(int argc, char **argv) {
-  // Initialize Google's logging library.
-  google::InitGoogleLogging(argv[0]);
-
-  // start the app
-  if (strcmp("berg", argv[1]) == 0) {
-    if (argc > 1) {
-      Berg::Write(argv[2]);
-    } else {
-      Berg::WriteFile(std::cin);
-    }
-  } else if (strcmp("size", argv[1]) == 0) {
-    Digest d;
-    BergReader r(argv[2], d);
-    cout << r.ChunkCount() << endl;
-  } else if (strcmp("list", argv[1]) == 0) {
-    Digest d;
-    BergReader r(argv[2], d);
-    ShaMap hashes = r.ListHashes();
-    for (ShaMapper it = hashes->begin(); it != hashes->end(); ++it) {
-      cout << Digest::ToString(it->first) << "\t" << it->second << endl;;
-    }
+  for (int i = 0; i < len; ++i) {
+    s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
   }
+
+  s[len] = 0;
 }

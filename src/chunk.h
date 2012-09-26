@@ -13,30 +13,30 @@
 ///
 /// You should have received a copy of the GNU General Public License
 /// along with ice.  If not, see <http://www.gnu.org/licenses/>.
+#ifndef SRC_CHUNK_H_
+#define SRC_CHUNK_H_
 
-#include "src/ice.h"
+#include "src/digest.h"
 
-int main(int argc, char **argv) {
-  // Initialize Google's logging library.
-  google::InitGoogleLogging(argv[0]);
+#define MAX_CHUNK_SIZE 65535
+#define CHUNK_LENGTH_BYTE_SIZE 2
 
-  // start the app
-  if (strcmp("berg", argv[1]) == 0) {
-    if (argc > 1) {
-      Berg::Write(argv[2]);
-    } else {
-      Berg::WriteFile(std::cin);
-    }
-  } else if (strcmp("size", argv[1]) == 0) {
-    Digest d;
-    BergReader r(argv[2], d);
-    cout << r.ChunkCount() << endl;
-  } else if (strcmp("list", argv[1]) == 0) {
-    Digest d;
-    BergReader r(argv[2], d);
-    ShaMap hashes = r.ListHashes();
-    for (ShaMapper it = hashes->begin(); it != hashes->end(); ++it) {
-      cout << Digest::ToString(it->first) << "\t" << it->second << endl;;
-    }
-  }
-}
+class Chunk {
+ public:
+  Chunk();
+  explicit Chunk(ChunkData data);
+  Chunk(ChunkData data, Sha hash);
+  void Create(ChunkData data);
+  void Create(ChunkData data, Sha hash);
+
+  Sha hash();
+  size_t length();
+  ChunkData data();
+
+ private:
+  Sha hash_;
+  ChunkData data_;
+
+  void CalculateHash();
+};
+#endif  // SRC_CHUNK_H_

@@ -17,9 +17,16 @@
 #ifndef SRC_ICE_H_
 #define SRC_ICE_H_
 
-#include <gflags/gflags.h>
+#include <glog/logging.h>
+
 #include <iostream>
 
 #include "./ice_config.h"
+
+#include "src/cli/berg.h"
+#include "src/berg_reader.h"
+
+using std::cout;
+using std::endl;
 
 #endif  // SRC_ICE_H_

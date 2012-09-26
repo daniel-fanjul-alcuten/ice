@@ -31,8 +31,8 @@ ice floe [<berg_file>]
 ice neve <berg_file | floe_file | neve_file>+
 	it reads a set of bergs, floes and/or neves and it generates a new neve that indexes all the chunks
 
-ice lump [--floe] <sha>+ <berg_file | floe_file | neve_file>+
-	it generates a berg (and optionally the floe) with only the given chunks, the chunks must be in the given bergs, floes and neves
+ice mix [--floe] <sha>+ <berg_file | floe_file | neve_file>+
+	it mixes chunks to produce a berg (and optionally the floe) with only the given chunks, the chunks must be in the given bergs, floes and neves
 
 PLUMBING (READ)
 
@@ -56,7 +56,7 @@ ice freeze [--floe] [--neve] [--berg-size <size>] <input_file> <berg_file | floe
 	it writes the names of the bergs in the standard output
 	optionally it writes a new neve that indexes the new bergs and writes its name in the standard output
 
-ice melt <sha>+ <berg_file | floe_file | neve_file>+
+ice thaw <sha>+ <berg_file | floe_file | neve_file>+
 	it concatenates in the standard output the chunks of the given shas in the given bergs, floes and neves
 
 FUTURE WORK

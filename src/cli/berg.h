@@ -13,30 +13,26 @@
 ///
 /// You should have received a copy of the GNU General Public License
 /// along with ice.  If not, see <http://www.gnu.org/licenses/>.
+#ifndef SRC_CLI_BERG_WRITER_H_
+#define SRC_CLI_BERG_WRITER_H_
 
-#include "src/ice.h"
+#include <iostream>
+#include <fstream>
 
-int main(int argc, char **argv) {
-  // Initialize Google's logging library.
-  google::InitGoogleLogging(argv[0]);
+#include "src/berg_writer.h"
 
-  // start the app
-  if (strcmp("berg", argv[1]) == 0) {
-    if (argc > 1) {
-      Berg::Write(argv[2]);
-    } else {
-      Berg::WriteFile(std::cin);
-    }
-  } else if (strcmp("size", argv[1]) == 0) {
-    Digest d;
-    BergReader r(argv[2], d);
-    cout << r.ChunkCount() << endl;
-  } else if (strcmp("list", argv[1]) == 0) {
-    Digest d;
-    BergReader r(argv[2], d);
-    ShaMap hashes = r.ListHashes();
-    for (ShaMapper it = hashes->begin(); it != hashes->end(); ++it) {
-      cout << Digest::ToString(it->first) << "\t" << it->second << endl;;
-    }
-  }
-}
+using std::ofstream;
+using std::ifstream;
+using std::fstream;
+using std::istream;
+using std::ios;
+
+class Berg {
+ public:
+  static void Write(const char* file_name);
+  static void WriteFile(istream& stream);
+
+ private:
+  Berg();
+};
+#endif  // SRC_CLI_BERG_WRITER_H_

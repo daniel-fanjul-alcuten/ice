@@ -3,7 +3,8 @@ project (ice)
 set (ice_VERSION_MAJOR 1)
 set (ice_VERSION_MINOR 0)
 #SET(CMAKE_BUILD_TYPE release)
- SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_BUILD_TYPE Debug)
+#set(CMAKE_EXE_LINKER_FLAGS "-pg")
 
 # add modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cmake")
@@ -39,7 +40,8 @@ find_package(GMock REQUIRED)
 # Add test file
 file(GLOB TestFiles **/*_test.cc)
 
-set(iceSources lib/libgflags.a)
+set(iceSources src/digest.cc src/chunk.cc src/berg_reader.cc src/berg_writer.cc
+  src/cli/berg.cc lib/libgflags.a)
 
 file(GLOB TagSources **/*cc **/*h)
 
@@ -48,7 +50,10 @@ set(SourceFiles ${iceSources})
 SETUP_TARGET_FOR_COVERAGE(cov runTests doc/coverage)
 add_executable(runTests ${SourceFiles} ${TestFiles})
 # Link test executable against gtest & gtest_main
-add_test(runTests runUnitTests)
+add_test(runTests build/runTests)
+
+#set openssl
+find_package(OpenSSL)
 
 #set doxygen
 find_package(Doxygen)
@@ -65,15 +70,19 @@ endif(DOXYGEN_FOUND)
 # add executable
 add_executable(ice src/ice.cc ${SourceFiles})
 
+# add profiler
+#add_definitions(-pg)
+
 # link libs
 include_directories(${Boost_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS}
   ${GMOCK_INCLUDE_DIRS})
 
-target_link_libraries(ice pthread libgflags.a dl ${CMAKE_THREAD_LIBS_INIT}
-  ${Boost_LIBRARIES})
+target_link_libraries(ice pthread libgflags.a glog dl ${CMAKE_THREAD_LIBS_INIT}
+  ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
 
-target_link_libraries(runTests pthread libgflags.a dl ${CMAKE_THREAD_LIBS_INIT}
-  ${Boost_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES})
+target_link_libraries(runTests pthread glog libgflags.a dl ${CMAKE_THREAD_LIBS_INIT}
+  ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} ${GTEST_BOTH_LIBRARIES} 
+  ${GMOCK_BOTH_LIBRARIES})
 
 # ctags exuberant
 add_custom_command (TARGET ice POST_BUILD COMMAND
