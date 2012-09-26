@@ -30,36 +30,34 @@ void Floe::set_sha(Sha sha) {
   sha_ = sha;
 }
 
-int Floe::size() {
+int Floe::Size() {
   return locations_.size();
 }
 
-Location Floe::get(Sha sha) {
-  map<Sha, Location>::iterator it = locations_.find(sha);
+LocationView Floe::Get(Sha sha) {
+  map<Sha, LocationView>::iterator it = locations_.find(sha);
   if (it != locations_.end()) {
     return it->second;
   }
-  Location location = {0, 0};
-  return location;
+  return LocationView();
 }
 
-void Floe::put(Sha sha, int offset, int length) {
-  Location location = {offset, length};
-  locations_[sha] = location;
+void Floe::Put(Sha sha, int offset, int length) {
+  locations_[sha] = LocationView(new Location(offset, length));
 }
 
-void Floe::put(Sha sha, Location location) {
-  locations_[sha] = location;
+void Floe::Put(Sha sha, Location* location) {
+  locations_[sha].reset(location);
 }
 
-map<Sha, Location>::const_iterator Floe::list() {
-  return locations_.begin();
+map<Sha, LocationView> Floe::List() {
+  return locations_;
 }
 
-Floe Floe::read(FILE* file) {
+Floe Floe::Read(string file_name) {
   // TODO(dfanjul): Floe::read()
 }
 
-void Floe::write(FILE* file) {
+void Floe::Write(string file_name) {
   // TODO(dfanjul): Floe::write()
 }

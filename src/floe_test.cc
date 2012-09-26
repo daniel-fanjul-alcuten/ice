@@ -30,9 +30,8 @@ TEST(FloeTest, TestFloe) {
   Floe floe;
 
   ASSERT_EQ(NULL, floe.sha().get());
-  ASSERT_EQ(0, floe.get(sha).offset);
-  ASSERT_EQ(0, floe.get(sha).length);
-  ASSERT_EQ(0, floe.size());
+  ASSERT_EQ(NULL, floe.Get(sha).get());
+  ASSERT_EQ(0, floe.Size());
 }
 
 TEST(FloeTest, TestFloeSha) {
@@ -42,9 +41,8 @@ TEST(FloeTest, TestFloeSha) {
   Floe floe(sha);
 
   ASSERT_EQ(foo, floe.sha().get());
-  ASSERT_EQ(0, floe.get(sha).offset);
-  ASSERT_EQ(0, floe.get(sha).length);
-  ASSERT_EQ(0, floe.size());
+  ASSERT_EQ(NULL, floe.Get(sha).get());
+  ASSERT_EQ(0, floe.Size());
 }
 
 TEST(FloeTest, TestSetSha) {
@@ -55,9 +53,8 @@ TEST(FloeTest, TestSetSha) {
   floe.set_sha(sha);
 
   ASSERT_EQ(foo, floe.sha().get());
-  ASSERT_EQ(0, floe.get(sha).offset);
-  ASSERT_EQ(0, floe.get(sha).length);
-  ASSERT_EQ(0, floe.size());
+  ASSERT_EQ(NULL, floe.Get(sha).get());
+  ASSERT_EQ(0, floe.Size());
 }
 
 TEST(FloeTest, TestPut) {
@@ -65,12 +62,12 @@ TEST(FloeTest, TestPut) {
   strcpy((char*)foo, "foo");
   Sha sha(foo);
   Floe floe;
-  floe.put(sha, 1, 2);
+  floe.Put(sha, 1, 2);
 
   ASSERT_EQ(NULL, floe.sha().get());
-  ASSERT_EQ(1, floe.get(sha).offset);
-  ASSERT_EQ(2, floe.get(sha).length);
-  ASSERT_EQ(1, floe.size());
+  ASSERT_EQ(1, floe.Get(sha)->offset);
+  ASSERT_EQ(2, floe.Get(sha)->length);
+  ASSERT_EQ(1, floe.Size());
 }
 
 TEST(FloeTest, TestPutLocation) {
@@ -78,13 +75,13 @@ TEST(FloeTest, TestPutLocation) {
   strcpy((char*)foo, "foo");
   Sha sha(foo);
   Floe floe;
-  Location location = {1, 2};
-  floe.put(sha, location);
+  Location *location = new Location(1, 2);
+  floe.Put(sha, location);
 
   ASSERT_EQ(NULL, floe.sha().get());
-  ASSERT_EQ(1, floe.get(sha).offset);
-  ASSERT_EQ(2, floe.get(sha).length);
-  ASSERT_EQ(1, floe.size());
+  ASSERT_EQ(1, floe.Get(sha)->offset);
+  ASSERT_EQ(2, floe.Get(sha)->length);
+  ASSERT_EQ(1, floe.Size());
 }
 
 TEST(FloeTest, TestList) {
@@ -95,26 +92,29 @@ TEST(FloeTest, TestList) {
   strcpy((char*)bar, "bar");
   Sha sha2(bar);
   Floe floe;
-  floe.put(sha1, 1, 2);
-  floe.put(sha2, 3, 4);
+  floe.Put(sha1, 1, 2);
+  floe.Put(sha2, 3, 4);
 
   ASSERT_EQ(NULL, floe.sha().get());
-  ASSERT_EQ(1, floe.get(sha1).offset);
-  ASSERT_EQ(2, floe.get(sha1).length);
-  ASSERT_EQ(3, floe.get(sha2).offset);
-  ASSERT_EQ(4, floe.get(sha2).length);
-  ASSERT_EQ(2, floe.size());
+  ASSERT_EQ(1, floe.Get(sha1)->offset);
+  ASSERT_EQ(2, floe.Get(sha1)->length);
+  ASSERT_EQ(3, floe.Get(sha2)->offset);
+  ASSERT_EQ(4, floe.Get(sha2)->length);
+  ASSERT_EQ(2, floe.Size());
 
-  map<Sha, Location>::const_iterator it = floe.list();
-  // ASSERT_EQ(sha2, it->first);
-  // ASSERT_EQ(3, it->second.offset);
-  // ASSERT_EQ(4, it->second.length);
+  map<Sha, LocationView> list = floe.List();
+  map<Sha, LocationView>::const_iterator it = list.begin();
+
+  lex_compare cmp;
+  ASSERT_FALSE(cmp(sha1, it->first));
+  ASSERT_EQ(1, it->second->offset);
+  ASSERT_EQ(2, it->second->length);
   it++;
-  // ASSERT_EQ(sha1, it->first);
-  // ASSERT_EQ(1, it->second.offset);
-  // ASSERT_EQ(2, it->second.length);
+
+  ASSERT_FALSE(cmp(sha2, it->first));
+  ASSERT_EQ(3, it->second->offset);
+  ASSERT_EQ(4, it->second->length);
   it++;
-  // TODO(dfanjul): how can I detect the end of the iteration?
 }
 
 TEST(FloeTest, TestRead) {

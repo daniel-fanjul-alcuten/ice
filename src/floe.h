@@ -19,17 +19,24 @@
 
 #include <map>
 #include <list>
+#include <boost/shared_ptr.hpp>
 
 #include "src/digest.h"
 #include "src/chunk.h"
 
 using std::map;
 using std::list;
+using boost::shared_ptr;
 
-typedef struct {
+typedef struct _Location {
   int offset;
   int length;
+
+  _Location(int off, int len) : offset(off), length(len) {
+  }
 } Location;
+
+typedef shared_ptr<const Location> LocationView;
 
 class Floe {
  public:
@@ -39,18 +46,18 @@ class Floe {
   Sha sha();
   void set_sha(Sha sha);
 
-  int size();
-  Location get(Sha sha);
-  void put(Sha sha, int offset, int length);
-  void put(Sha sha, Location location);
-  map<Sha, Location>::const_iterator list();
+  int Size();
+  LocationView Get(Sha sha);
+  void Put(Sha sha, int offset, int length);
+  void Put(Sha sha, Location* location);
+  map<Sha, LocationView> List();
 
-  static Floe read(FILE* file);
-  void write(FILE* file);
+  static Floe Read(string file_name);
+  void Write(string file_name);
 
  private:
   Sha sha_;
-  map<Sha, Location> locations_;
+  map<Sha, LocationView> locations_;
 };
 
 #endif  // SRC_FLOE_H_

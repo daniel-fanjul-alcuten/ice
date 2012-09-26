@@ -29,6 +29,7 @@ using std::hex;
 using std::setw;
 using std::setfill;
 using boost::shared_array;
+using std::lexicographical_compare;
 
 typedef shared_array<unsigned char> Sha;
 
@@ -44,6 +45,13 @@ typedef struct _ChunkData {
   _ChunkData() {
   }
 } ChunkData;
+
+struct lex_compare {
+  bool operator() (const Sha& lhs, const Sha& rhs) const{
+    return lexicographical_compare(lhs.get(), lhs.get() + SHA256_DIGEST_LENGTH,
+           rhs.get(), rhs.get() + SHA256_DIGEST_LENGTH);
+  }
+};
 
 class Digest {
  public:

@@ -35,14 +35,6 @@ using std::string;
 using std::ofstream;
 using std::ios;
 using std::set;
-using std::lexicographical_compare;
-
-struct lex_compare {
-  bool operator() (const Sha& lhs, const Sha& rhs) const{
-    return lexicographical_compare(lhs.get(), lhs.get() + SHA256_DIGEST_LENGTH,
-           rhs.get(), rhs.get() + SHA256_DIGEST_LENGTH);
-  }
-};
 
 class BergWriter {
  public:
