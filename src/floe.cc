@@ -55,9 +55,53 @@ map<Sha, LocationView> Floe::List() {
 }
 
 Floe Floe::Read(string file_name) {
-  // TODO(dfanjul): Floe::read()
+  ifstream file;
+  file.open(file_name.c_str(), ios::in | ios::binary);
+  assert(file.is_open());
+
+  // skip magic
+  file.seekg(sizeof(FLOE_MAGIC_HEADER), ios::beg);
+
+  char *buffer = new char[sizeof(int64_t)];
+  //TODO(gpetrovic): read the floe
 }
 
 void Floe::Write(string file_name) {
-  // TODO(dfanjul): Floe::write()
+  Digest d;
+  BergReader r(file_name, d);
+  ShaMap hashes = r.ListHashes();
+  Floe f;
+
+  ofstream file;
+  char* tmp_name = new char[11];
+  GenRandom(tmp_name, 10);
+  file.open(tmp_name, ios::out | ios::binary);
+  assert(file.is_open());
+
+  LOG(INFO) << "Write magic " << FLOE_MAGIC_HEADER;
+  file.put(FLOE_MAGIC_HEADER);
+
+  // leave room for chunk count
+  file.seekp(sizeof(int64_t), ios::cur);
+
+  vector<Location> locations;
+  int64_t count = 0;
+  size_t offset = sizeof(FLOE_MAGIC_HEADER);
+  for (ShaMapper it = hashes->begin(); it != hashes->end(); ++it) {
+    file.write((const char*)it->first.get(), SHA256_DIGEST_LENGTH);
+    Location *loc = new Location(offset, it->second);
+    locations.push_back(*loc);
+    f.Put(it->first, loc);
+    offset += loc->length + SHA256_DIGEST_LENGTH + CHUNK_LENGTH_BYTE_SIZE;
+    ++count;
+  }
+
+  file.write((char*)&locations[0], sizeof(Location) * locations.size());
+  file.seekp(1);
+  file.write(reinterpret_cast<const char*>(&count), sizeof(count));
+
+  file.close();
+  string new_name = Digest::ToString(r.ReadHash());
+  new_name.append(".floe");
+  rename(tmp_name, new_name.c_str());
 }

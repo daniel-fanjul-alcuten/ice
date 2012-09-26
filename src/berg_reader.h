@@ -37,8 +37,8 @@ using std::ios;
 using std::map;
 using boost::shared_ptr;
 
-typedef shared_ptr<map<Sha, size_t> > ShaMap;
-typedef map<Sha, size_t>::const_iterator ShaMapper;
+typedef shared_ptr<map<Sha, size_t, lex_compare> > ShaMap;
+typedef map<Sha, size_t, lex_compare>::const_iterator ShaMapper;
 
 class BergReader {
  public:
@@ -49,6 +49,7 @@ class BergReader {
   bool CheckOffset(Sha sha, size_t offset);
   ShaMap ListHashes();
   void Close();
+  Sha ReadHash();
   //ChunkIterator GetIterator();
 
  private:

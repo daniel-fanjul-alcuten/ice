@@ -13,7 +13,12 @@
 ///
 /// You should have received a copy of the GNU General Public License
 /// along with ice.  If not, see <http://www.gnu.org/licenses/>.
+
+#ifndef SRC_MAGIC_H_
+#define SRC_MAGIC_H_
+
 #define BERG_MAGIC_HEADER 0x1
+#define FLOE_MAGIC_HEADER 0x2
 
 static void GenRandom(char *s, const int len) {
   static const char alphanum[] =
@@ -27,3 +32,5 @@ static void GenRandom(char *s, const int len) {
 
   s[len] = 0;
 }
+
+#endif  // SRC_MAGIC_H_

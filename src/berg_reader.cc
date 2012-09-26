@@ -77,7 +77,7 @@ size_t BergReader::ChunkCount() {
 }
 
 ShaMap BergReader::ListHashes() {
-  ShaMap hashes(new map<Sha, size_t>);
+  ShaMap hashes(new map<Sha, size_t, lex_compare>);
 
   file_.seekg(0, ios::end);
   size_t end = file_.tellg();
@@ -99,4 +99,11 @@ ShaMap BergReader::ListHashes() {
   }
 
   return hashes;
+}
+
+Sha BergReader::ReadHash() {
+  file_.seekg(SHA256_DIGEST_LENGTH, ios::end);
+  unsigned char* hash = new unsigned char[SHA256_DIGEST_LENGTH];
+  file_.read((char*)hash, SHA256_DIGEST_LENGTH);
+  return Sha(hash);
 }

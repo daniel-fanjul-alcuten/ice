@@ -19,13 +19,18 @@
 
 #include <map>
 #include <list>
+#include <fstream>
+#include <iostream>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 
-#include "src/digest.h"
-#include "src/chunk.h"
+#include "src/magic.h"
+#include "src/berg_reader.h"
 
 using std::map;
 using std::list;
+using std::ofstream;
+using std::vector;
 using boost::shared_ptr;
 
 typedef struct _Location {

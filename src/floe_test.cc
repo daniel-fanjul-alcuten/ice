@@ -17,8 +17,10 @@
 #include <string>
 #include <vector>
 
-#include "src/floe.h"
 #include "gtest/gtest.h"
+
+#include "src/floe.h"
+#include "src/berg_writer.h"
 
 // ASSERT_EQ(1, 1);
 // ASSERT_NO_FATAL_FAILURE();
@@ -114,11 +116,27 @@ TEST(FloeTest, TestList) {
   ASSERT_FALSE(cmp(sha2, it->first));
   ASSERT_EQ(3, it->second->offset);
   ASSERT_EQ(4, it->second->length);
-  it++;
 }
 
 TEST(FloeTest, TestRead) {
-  // TODO(dfanjul): test
+  char* tmp_name = new char[11];
+  GenRandom(tmp_name, 10);
+  Digest d;
+  BergWriter bw(tmp_name, d);
+  char* contents1 = new char[12];
+  char* contents2 = new char[18];
+  snprintf(contents1, 12, "hostia puta");
+  Chunk c1(ChunkData(contents1, 11));
+  snprintf(contents2, 18, "sharmuta mitmara");
+  Chunk c2(ChunkData(contents2, 17));
+  bw.WriteChunk(c1);
+  bw.WriteChunk(c2);
+  bw.Close();
+
+  Floe f;
+  f.Write(tmp_name);
+
+  remove(tmp_name);
 }
 
 TEST(FloeTest, TestWrite) {
