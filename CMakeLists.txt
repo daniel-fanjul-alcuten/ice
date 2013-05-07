@@ -41,7 +41,7 @@ find_package(GMock REQUIRED)
 file(GLOB TestFiles **/*_test.cc)
 
 set(iceSources src/digest.cc src/chunk.cc src/berg_reader.cc src/berg_writer.cc
-  src/cli/berg.cc lib/libgflags.a)
+  src/cli/berg.cc)
 
 file(GLOB TagSources **/*cc **/*h)
 
@@ -77,10 +77,10 @@ add_executable(ice src/ice.cc ${SourceFiles})
 include_directories(${Boost_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS}
   ${GMOCK_INCLUDE_DIRS})
 
-target_link_libraries(ice pthread libgflags.a glog dl ${CMAKE_THREAD_LIBS_INIT}
+target_link_libraries(ice pthread gflags glog dl ${CMAKE_THREAD_LIBS_INIT}
   ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
 
-target_link_libraries(runTests pthread glog libgflags.a dl ${CMAKE_THREAD_LIBS_INIT}
+target_link_libraries(runTests pthread glog gflags dl ${CMAKE_THREAD_LIBS_INIT}
   ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} ${GTEST_BOTH_LIBRARIES} 
   ${GMOCK_BOTH_LIBRARIES})
 
